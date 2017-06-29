@@ -97,3 +97,7 @@ func callSetup(ctx context.Context, client *spanner.Client) error {
 		return nil
 	}
 }
+
+func main()  {
+	
+}
