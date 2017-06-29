@@ -24,13 +24,15 @@ func BenchmarkEmptyRWTransaction(b *testing.B) {
 	ctx, _ := context.WithTimeout(context.Background(), 1*time.Minute)
 	dataClient := createClient(ctx, db)
 	b.ResetTimer()
-	for n := 0; n < b.N; n++ {
-		err := emptyRWTransaction(ctx, dataClient)
-		if err != nil {
-			b.Errorf(" failed with %v", err)
-			b.Fail()
+	b.RunParallel(func(pb *testing.PB) {
+		for pb.Next() {
+			err := emptyRWTransaction(ctx, dataClient)
+			if err != nil {
+				b.Errorf(" failed with %v", err)
+				b.Fail()
+			}
 		}
-	}
+	})
 }
 
 func BenchmarkCallSetup(b *testing.B) {
