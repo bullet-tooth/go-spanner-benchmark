@@ -49,3 +49,18 @@ func BenchmarkCallSetup(b *testing.B) {
 		}
 	})
 }
+
+func BenchmarkPrefetch(b *testing.B) {
+	ctx, _ := context.WithTimeout(context.Background(), 1*time.Minute)
+	dataClient := createClient(ctx, db)
+	b.ResetTimer()
+	b.RunParallel(func(pb *testing.PB) {
+		for pb.Next() {
+			err := prefetch(ctx, dataClient)
+			if err != nil {
+				b.Errorf(" failed with %v", err)
+				b.Fail()
+			}
+		}
+	})
+}

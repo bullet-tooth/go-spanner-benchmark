@@ -98,6 +98,31 @@ func callSetup(ctx context.Context, client *spanner.Client) error {
 	}
 }
 
+func prefetch(ctx context.Context, client *spanner.Client) error {
+	lCustomerId := 491733000000 + rand.Int63n(100000000);
+	stmt := spanner.NewStatement( `SELECT mp FROM cao_ldm_00_acc WHERE pk=@pk AND valid_from<=@valid_from ORDER BY valid_from DESC`)
+	stmt.Params["pk"] = "169 " + string(lCustomerId) + " 0 "
+	stmt.Params["valid_from"] = 100500
+
+	iter := client.Single().Query(ctx, stmt)
+	var mp int64
+	defer iter.Stop()
+	for {
+		row, err := iter.Next()
+		if err == iterator.Done {
+			return nil
+		}
+		if err != nil {
+			return err
+		}
+		if err := row.Columns(&mp); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+
 func main()  {
 	
 }
